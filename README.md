@@ -2,10 +2,13 @@
 
 > A sleek, modern personal dashboard featuring real-time precision digital clock, dynamic greetings, interactive theme accents, and glassmorphic aesthetics.
 
+[![Live Demo](https://img.shields.io/badge/demo-online-brightgreen.svg)](https://meryan-421.github.io/Course_pratice/)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Vanilla JS](https://img.shields.io/badge/vanilla-JS-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![CSS3](https://img.shields.io/badge/style-Glassmorphism-purple.svg)](https://developer.mozilla.org/en-US/docs/Web/CSS)
 [![Responsive](https://img.shields.io/badge/design-Responsive-success.svg)](#)
+
+🚀 **Live Demo**: [https://meryan-421.github.io/Course_pratice/](https://meryan-421.github.io/Course_pratice/)
 
 ---
 
