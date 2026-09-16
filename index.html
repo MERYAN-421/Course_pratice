@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Personal profile dashboard featuring customizable user name, live real-time digital clock, timezone details, and interactive themes.">
+  <title>Ryan • Live Clock</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-theme="aurora">
+  <!-- Dynamic Ambient Background Glow Elements -->
+  <div class="ambient-glow orb-1" aria-hidden="true"></div>
+  <div class="ambient-glow orb-2" aria-hidden="true"></div>
+  <div class="ambient-glow orb-3" aria-hidden="true"></div>
+
+  <main class="page-container">
+    <div class="card-glass" id="main-card">
+      <!-- Top Status Header -->
+      <header class="card-header">
+        <div class="status-pill" id="status-pill">
+          <span class="status-indicator"></span>
+          <span id="greeting-text">Good day</span>
+        </div>
+        <div class="header-controls">
+          <div class="theme-picker" id="theme-picker" title="Switch accent theme">
+            <button class="theme-btn theme-btn-aurora active" data-theme="aurora" aria-label="Aurora theme" id="theme-aurora-btn"></button>
+            <button class="theme-btn theme-btn-cyan" data-theme="cyan" aria-label="Cyber Cyan theme" id="theme-cyan-btn"></button>
+            <button class="theme-btn theme-btn-emerald" data-theme="emerald" aria-label="Emerald theme" id="theme-emerald-btn"></button>
+            <button class="theme-btn theme-btn-rose" data-theme="rose" aria-label="Sunset Rose theme" id="theme-rose-btn"></button>
+            <button class="theme-btn theme-btn-amber" data-theme="amber" aria-label="Amber Gold theme" id="theme-amber-btn"></button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Profile Section -->
+      <section class="profile-section" aria-label="Personal Profile">
+        <div class="avatar-wrapper">
+          <div class="avatar-glow" aria-hidden="true"></div>
+          <div class="avatar" id="avatar-container">
+            <span id="avatar-initials">RY</span>
+          </div>
+          <button class="avatar-badge-btn" id="avatar-badge-btn" title="Click to customize profile" aria-label="Edit Profile">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="profile-details">
+          <div class="name-row">
+            <h1 class="user-name" id="user-name" title="Click to edit name" tabindex="0" role="button" aria-label="Your name (click to edit)">Ryan</h1>
+            <button class="edit-btn" id="edit-name-btn" title="Edit your name" aria-label="Edit Name">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+            </button>
+          </div>
+          <p class="user-bio" id="user-bio" title="Click to edit tagline" tabindex="0" role="button" aria-label="Personal tagline (click to edit)">Exploring ideas & creating the future</p>
+        </div>
+      </section>
+
+      <!-- Divider -->
+      <div class="card-divider" aria-hidden="true"></div>
+
+      <!-- Live Clock Display Section -->
+      <section class="clock-section" aria-label="Live Real-Time Clock">
+        <div class="clock-label">CURRENT LOCAL TIME</div>
+        
+        <div class="clock-display" id="clock-display" aria-live="off">
+          <div class="time-block hours-block">
+            <span class="time-digits" id="clock-hours">00</span>
+            <span class="time-sublabel">HRS</span>
+          </div>
+          <div class="time-colon" aria-hidden="true">:</div>
+          <div class="time-block minutes-block">
+            <span class="time-digits" id="clock-minutes">00</span>
+            <span class="time-sublabel">MIN</span>
+          </div>
+          <div class="time-colon colon-seconds" id="colon-seconds" aria-hidden="true">:</div>
+          <div class="time-block seconds-block" id="seconds-wrapper">
+            <span class="time-digits digits-seconds" id="clock-seconds">00</span>
+            <span class="time-sublabel">SEC</span>
+          </div>
+          <div class="ampm-badge" id="clock-ampm">AM</div>
+        </div>
+
+        <!-- Minute Progress Bar -->
+        <div class="progress-bar-container" title="Current minute progress">
+          <div class="progress-bar-fill" id="second-progress-bar"></div>
+        </div>
+
+        <!-- Date & Location Metadata -->
+        <div class="clock-meta">
+          <div class="meta-item date-item">
+            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <span id="date-display">Wednesday, September 16, 2026</span>
+          </div>
+
+          <div class="meta-item timezone-item">
+            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            <span id="timezone-display">UTC+8 • Standard Time</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Interactive Controls Toolbar -->
+      <footer class="card-footer">
+        <div class="controls-toolbar">
+          <!-- 12h / 24h Toggle -->
+          <button class="tool-btn" id="toggle-format-btn" aria-label="Toggle 12/24 hour format">
+            <span class="tool-btn-icon">⏱️</span>
+            <span class="tool-btn-label" id="format-label">24-Hour</span>
+          </button>
+
+          <!-- Toggle Seconds -->
+          <button class="tool-btn" id="toggle-seconds-btn" aria-label="Toggle seconds display">
+            <span class="tool-btn-icon">⚡</span>
+            <span class="tool-btn-label" id="seconds-label">Seconds: ON</span>
+          </button>
+
+          <!-- Copy Time Stamp -->
+          <button class="tool-btn" id="copy-time-btn" aria-label="Copy current timestamp">
+            <span class="tool-btn-icon" id="copy-icon">📋</span>
+            <span class="tool-btn-label" id="copy-label">Copy Time</span>
+          </button>
+        </div>
+      </footer>
+    </div>
+  </main>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal-backdrop" id="edit-modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-labelledby="modal-title" aria-modal="true">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Edit Profile</h2>
+        <button class="modal-close-btn" id="modal-close-btn" aria-label="Close dialog">&times;</button>
+      </div>
+      <form class="modal-form" id="edit-profile-form">
+        <div class="form-group">
+          <label for="input-name" class="form-label">Your Name</label>
+          <input type="text" id="input-name" class="form-input" placeholder="Enter your name" maxlength="40" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label for="input-bio" class="form-label">Status / Tagline</label>
+          <input type="text" id="input-bio" class="form-input" placeholder="e.g. Software Engineer & Designer" maxlength="80">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn-save" id="modal-save-btn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
