@@ -1,5 +1,6 @@
 /**
- * Personal Page & Live Precision Clock Application
+ * Ryan's Personal Page & Live Precision Clock Application
+ * DIC-1 Coursework - National Chung Hsing University Electrical Engineering
  */
 
 (function () {
@@ -7,6 +8,10 @@
 
   // DOM Elements
   const elements = {
+    // Top Navigation
+    navLinks: document.querySelectorAll('.nav-link'),
+    sections: document.querySelectorAll('section[id]'),
+
     // Clock
     hours: document.getElementById('clock-hours'),
     minutes: document.getElementById('clock-minutes'),
@@ -26,7 +31,7 @@
     editNameBtn: document.getElementById('edit-name-btn'),
     avatarBadgeBtn: document.getElementById('avatar-badge-btn'),
 
-    // Toolbar
+    // Clock Toolbar
     toggleFormatBtn: document.getElementById('toggle-format-btn'),
     formatLabel: document.getElementById('format-label'),
     toggleSecondsBtn: document.getElementById('toggle-seconds-btn'),
@@ -36,7 +41,6 @@
     copyLabel: document.getElementById('copy-label'),
 
     // Theme Picker
-    themePicker: document.getElementById('theme-picker'),
     themeButtons: document.querySelectorAll('.theme-btn'),
 
     // Modal
@@ -52,15 +56,25 @@
   };
 
   // State Management with LocalStorage
-  const storedName = localStorage.getItem('personal_page_name');
-  const initialName = (!storedName || storedName === 'Alex Morgan') ? 'Ryan' : storedName;
-  localStorage.setItem('personal_page_name', initialName);
+  const defaultBio = '國立中興大學電機工程學系。專注於強化式學習演算法與智慧系統，球場上熱血的進攻核心 ⚽。老師教很好，感謝～！';
+  
+  let storedName = localStorage.getItem('personal_page_name');
+  if (!storedName || storedName === 'Alex Morgan') {
+    storedName = 'Ryan';
+    localStorage.setItem('personal_page_name', 'Ryan');
+  }
+
+  let storedBio = localStorage.getItem('personal_page_bio');
+  if (!storedBio || storedBio.includes('Exploring ideas')) {
+    storedBio = defaultBio;
+    localStorage.setItem('personal_page_bio', defaultBio);
+  }
 
   const state = {
-    name: initialName,
-    bio: localStorage.getItem('personal_page_bio') || 'Exploring ideas & creating the future',
-    is24Hour: localStorage.getItem('personal_page_is24h') !== 'false', // default true (24h)
-    showSeconds: localStorage.getItem('personal_page_show_seconds') !== 'false', // default true
+    name: storedName,
+    bio: storedBio,
+    is24Hour: localStorage.getItem('personal_page_is24h') !== 'false',
+    showSeconds: localStorage.getItem('personal_page_show_seconds') !== 'false',
     theme: localStorage.getItem('personal_page_theme') || 'aurora',
   };
 
@@ -73,12 +87,12 @@
     if (toastTimeout) clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => {
       elements.toast.classList.remove('show');
-    }, 2800);
+    }, 2600);
   }
 
   // Calculate initials from name
   function getInitials(name) {
-    if (!name) return 'U';
+    if (!name) return 'RY';
     const parts = name.trim().split(/\s+/);
     if (parts.length === 1) {
       return parts[0].substring(0, 2).toUpperCase();
@@ -91,7 +105,7 @@
     if (elements.userName) elements.userName.textContent = state.name;
     if (elements.userBio) elements.userBio.textContent = state.bio;
     if (elements.avatarInitials) elements.avatarInitials.textContent = getInitials(state.name);
-    document.title = `${state.name} • Live Clock`;
+    document.title = `${state.name} • 中興電機 | Personal Page & Live Clock`;
   }
 
   // Update Greeting based on time and name
@@ -108,11 +122,11 @@
       greeting = '🌙 Good night';
     }
     if (elements.greetingText) {
-      elements.greetingText.textContent = `${greeting}, ${state.name.split(' ')[0]}`;
+      elements.greetingText.textContent = `${greeting}, ${state.name}`;
     }
   }
 
-  // Get Formatted UTC Offset
+  // Get Formatted UTC Offset & Timezone
   function getFormattedTimezone() {
     try {
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -123,7 +137,7 @@
       const offsetStr = `UTC${sign}${hours}${mins > 0 ? ':' + mins.toString().padStart(2, '0') : ''}`;
       return `${offsetStr} • ${timeZone.replace('_', ' ')}`;
     } catch {
-      return 'Local Timezone';
+      return 'UTC+8 • Taipei Standard Time';
     }
   }
 
@@ -140,7 +154,7 @@
       elements.secondProgressBar.style.width = `${progressPercent.toFixed(2)}%`;
     }
 
-    // Only update text content when the second has ticked
+    // Update text content when second ticks
     if (currentSeconds !== lastSecond) {
       lastSecond = currentSeconds;
 
@@ -178,14 +192,14 @@
       // Date Display
       if (elements.dateDisplay) {
         const dateOptions = { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' };
-        elements.dateDisplay.textContent = now.toLocaleDateString(undefined, dateOptions);
+        elements.dateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions);
       }
 
       // Greeting update
       updateGreeting(now);
     }
 
-    // Request next animation frame for ultra-smooth progress bar
+    // Request next animation frame
     requestAnimationFrame(tickClock);
   }
 
@@ -222,7 +236,31 @@
     if (elements.formatLabel) {
       elements.formatLabel.textContent = state.is24Hour ? '24-Hour' : '12-Hour';
     }
-    lastSecond = -1; // force clock rerender
+    lastSecond = -1;
+  }
+
+  // Scrollspy for Navigation Bar
+  function initScrollSpy() {
+    window.addEventListener('scroll', () => {
+      let currentSectionId = 'about';
+      const scrollY = window.pageYOffset + 120;
+
+      elements.sections.forEach((section) => {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        if (scrollY >= top && scrollY < top + height) {
+          currentSectionId = section.getAttribute('id');
+        }
+      });
+
+      elements.navLinks.forEach((link) => {
+        if (link.getAttribute('href') === `#${currentSectionId}`) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }, { passive: true });
   }
 
   // Modal Handlers
@@ -245,22 +283,23 @@
 
   // Initialize Event Listeners
   function initEvents() {
-    // 12h/24h toggle button
+    // 12h/24h toggle
     if (elements.toggleFormatBtn) {
       elements.toggleFormatBtn.addEventListener('click', () => {
         state.is24Hour = !state.is24Hour;
         localStorage.setItem('personal_page_is24h', state.is24Hour);
         applyFormat();
-        showToast(`Clock switched to ${state.is24Hour ? '24-Hour' : '12-Hour'} format`);
+        showToast(`已切換為 ${state.is24Hour ? '24 小時制' : '12 小時制'}`);
       });
     }
 
-    // Toggle Seconds button
+    // Toggle Seconds
     if (elements.toggleSecondsBtn) {
       elements.toggleSecondsBtn.addEventListener('click', () => {
         state.showSeconds = !state.showSeconds;
         localStorage.setItem('personal_page_show_seconds', state.showSeconds);
         applySecondsVisibility();
+        showToast(`秒數顯示：${state.showSeconds ? '開啟' : '關閉'}`);
       });
     }
 
@@ -269,19 +308,19 @@
       elements.copyTimeBtn.addEventListener('click', () => {
         const now = new Date();
         const timeStr = state.is24Hour
-          ? now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
-          : now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-        const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+          ? now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+          : now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+        const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
         const fullStamp = `${timeStr} (${dateStr})`;
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(fullStamp).then(() => {
-            showToast(`Copied: ${fullStamp}`);
+            showToast(`已複製時間戳記：${fullStamp}`);
           }).catch(() => {
-            showToast(`Time: ${fullStamp}`);
+            showToast(`時間戳記：${fullStamp}`);
           });
         } else {
-          showToast(`Time: ${fullStamp}`);
+          showToast(`時間戳記：${fullStamp}`);
         }
       });
     }
@@ -292,12 +331,19 @@
         btn.addEventListener('click', () => {
           const selectedTheme = btn.getAttribute('data-theme');
           applyTheme(selectedTheme);
-          showToast(`Accent theme: ${selectedTheme.charAt(0).toUpperCase() + selectedTheme.slice(1)}`);
+          const themeNames = {
+            aurora: 'Aurora 極光紫',
+            cyan: 'Cyber 賽博藍',
+            emerald: 'Emerald 翡翠綠',
+            rose: 'Sunset 暮光玫',
+            amber: 'Amber 曜石金'
+          };
+          showToast(`已切換主題：${themeNames[selectedTheme] || selectedTheme}`);
         });
       });
     }
 
-    // Open Edit Modal Triggers
+    // Edit Modal Triggers
     const editTriggers = [elements.userName, elements.userBio, elements.editNameBtn, elements.avatarBadgeBtn];
     editTriggers.forEach((trigger) => {
       if (trigger) {
@@ -311,7 +357,7 @@
       }
     });
 
-    // Close Modal Triggers
+    // Close Modal
     if (elements.modalCloseBtn) elements.modalCloseBtn.addEventListener('click', closeModal);
     if (elements.modalCancelBtn) elements.modalCancelBtn.addEventListener('click', closeModal);
     if (elements.modal) {
@@ -335,7 +381,7 @@
 
         if (newName) {
           state.name = newName;
-          state.bio = newBio || 'Exploring ideas & creating the future';
+          state.bio = newBio || defaultBio;
 
           localStorage.setItem('personal_page_name', state.name);
           localStorage.setItem('personal_page_bio', state.bio);
@@ -343,7 +389,7 @@
           updateProfileDOM();
           updateGreeting(new Date());
           closeModal();
-          showToast(`Welcome, ${state.name}!`);
+          showToast(`個人資料已更新！歡迎，${state.name}`);
         }
       });
     }
@@ -361,6 +407,7 @@
     }
 
     initEvents();
+    initScrollSpy();
 
     // Start precision clock loop
     tickClock();
