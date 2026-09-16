@@ -3,304 +3,329 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Ryan's Personal Page - 國立中興大學電機工程學系。專注於強化式學習、智慧系統與現代網頁開發。">
-  <title>Ryan • 中興電機 | Personal Page & Live Clock</title>
+  <meta name="description" content="Ryan • 國立中興大學電機工程學系 (NCHU EE) - 個人儀表板與即時高精度時鐘">
+  <title>Ryan • 中興電機 | Cyber-Luxe Personal Page</title>
   
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body data-theme="aurora">
-  <!-- Dynamic Ambient Background Glow Elements -->
-  <div class="ambient-glow orb-1" aria-hidden="true"></div>
-  <div class="ambient-glow orb-2" aria-hidden="true"></div>
-  <div class="ambient-glow orb-3" aria-hidden="true"></div>
+  <!-- Interactive Canvas Particle Field -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
 
-  <!-- Main Container -->
-  <div class="site-wrapper">
+  <!-- Ambient Dynamic Glowing Orbs -->
+  <div class="ambient-orb orb-primary" aria-hidden="true"></div>
+  <div class="ambient-orb orb-secondary" aria-hidden="true"></div>
+  <div class="ambient-orb orb-accent" aria-hidden="true"></div>
+
+  <!-- Page Wrapper -->
+  <div class="page-wrapper">
     
-    <!-- Top Navigation Bar -->
+    <!-- Top Cyber Navigation Bar -->
     <header class="top-nav glass-panel" id="main-nav">
       <div class="nav-brand">
-        <span class="brand-name">RYAN</span>
-        <span class="brand-tag">NCHU EE</span>
+        <span class="brand-badge">RYAN</span>
+        <span class="brand-divider">//</span>
+        <span class="brand-sub">NCHU_EE.2026</span>
       </div>
 
-      <nav class="nav-links" aria-label="Main Navigation">
-        <a href="#about" class="nav-link active">About</a>
-        <a href="#clock" class="nav-link">Live Clock</a>
-        <a href="#skills" class="nav-link">Skills</a>
-        <a href="#projects" class="nav-link">Projects</a>
-      </nav>
+      <div class="nav-center-telemetry">
+        <div class="status-indicator" title="系統運作正常">
+          <span class="status-dot"></span>
+          <span class="status-text">SYSTEM ONLINE</span>
+        </div>
+        <div class="telemetry-item" title="伺服器連線延遲">
+          <span class="telemetry-label">PING:</span>
+          <span class="telemetry-val" id="telemetry-latency">12ms</span>
+        </div>
+      </div>
 
-      <div class="nav-actions">
-        <!-- Theme Picker -->
-        <div class="theme-picker" id="theme-picker" title="切換主題風格">
-          <button class="theme-btn theme-btn-aurora active" data-theme="aurora" aria-label="Aurora theme" id="theme-aurora-btn"></button>
-          <button class="theme-btn theme-btn-cyan" data-theme="cyan" aria-label="Cyber Cyan theme" id="theme-cyan-btn"></button>
-          <button class="theme-btn theme-btn-emerald" data-theme="emerald" aria-label="Emerald theme" id="theme-emerald-btn"></button>
-          <button class="theme-btn theme-btn-rose" data-theme="rose" aria-label="Sunset Rose theme" id="theme-rose-btn"></button>
-          <button class="theme-btn theme-btn-amber" data-theme="amber" aria-label="Amber Gold theme" id="theme-amber-btn"></button>
+      <div class="nav-controls">
+        <!-- 12H / 24H Quick Toggle -->
+        <button id="format-toggle-btn" class="nav-btn" title="切換 12H / 24H 時間格式" aria-label="切換 12/24 小時制">
+          <span class="nav-btn-icon">⏱️</span>
+          <span id="format-label">24H</span>
+        </button>
+
+        <!-- Quick Edit Profile -->
+        <button id="quick-edit-btn" class="nav-btn" title="編輯個人資訊" aria-label="編輯個人資訊">
+          <svg class="btn-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span>Edit</span>
+        </button>
+
+        <!-- Theme Switcher -->
+        <div class="theme-picker" id="theme-picker" title="切換動態主題配色">
+          <button class="theme-btn theme-btn-aurora active" data-theme="aurora" aria-label="Aurora theme"></button>
+          <button class="theme-btn theme-btn-cyan" data-theme="cyan" aria-label="Cyber Cyan theme"></button>
+          <button class="theme-btn theme-btn-emerald" data-theme="emerald" aria-label="Emerald theme"></button>
+          <button class="theme-btn theme-btn-rose" data-theme="rose" aria-label="Sunset Rose theme"></button>
+          <button class="theme-btn theme-btn-amber" data-theme="amber" aria-label="Amber Gold theme"></button>
         </div>
       </div>
     </header>
 
-    <!-- Main Content Flow -->
+    <!-- Main Content Area -->
     <main class="main-content">
       
-      <!-- Profile Section -->
-      <section class="card-glass hero-profile-card" id="about" aria-label="個人資料 Profile">
-        <div class="card-header-status">
-          <div class="status-pill" id="status-pill">
-            <span class="status-indicator"></span>
-            <span id="greeting-text">Good day, Ryan</span>
+      <!-- HERO BENTO GRID: Profile Card (Left) + Clock Card (Right) -->
+      <section class="hero-bento-grid">
+        
+        <!-- PROFILE HERO CARD -->
+        <div class="hero-profile-card glass-panel" id="about">
+          <!-- Dynamic Time Greeting Pill -->
+          <div class="greeting-pill" id="dynamic-greeting-pill">
+            <span id="greeting-icon" class="greeting-icon">✨</span>
+            <span id="greeting-text" class="greeting-text">GOOD MORNING, RYAN</span>
           </div>
-          <span class="academic-badge">國立中興大學 電機工程學系</span>
-        </div>
 
-        <div class="profile-hero-content">
-          <div class="avatar-wrapper">
-            <div class="avatar-glow" aria-hidden="true"></div>
-            <div class="avatar-container" id="avatar-container">
-              <img src="avatar.jpg" alt="Ryan Avatar" class="avatar-img" id="avatar-img" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
-              <div class="avatar-fallback" id="avatar-fallback" style="display: none;">
-                <span id="avatar-initials">RY</span>
+          <div class="profile-card-body">
+            <!-- Avatar with Cyber Glow Halo -->
+            <div class="profile-avatar-wrapper">
+              <div class="avatar-glow-ring"></div>
+              <div class="avatar-circle">
+                <img src="avatar.jpg" alt="Ryan Avatar" class="avatar-photo" id="avatar-img" onerror="this.style.display='none'; document.getElementById('avatar-fallback').style.display='flex';">
+                <div class="avatar-fallback" id="avatar-fallback" style="display: none;">
+                  <span id="avatar-initials">RY</span>
+                </div>
+              </div>
+              <span class="avatar-status-badge" title="Active in NCHU EE Lab">●</span>
+            </div>
+
+            <!-- Profile Info -->
+            <div class="profile-meta">
+              <div class="name-row">
+                <h1 class="user-name" id="user-name" title="點擊編輯姓名" tabindex="0" role="button">Ryan</h1>
+                <span class="academic-tag">國立中興大學 電機工程學系</span>
+              </div>
+
+              <!-- Specialty Badges -->
+              <div class="specialty-badges">
+                <span class="spec-badge badge-primary"><span class="badge-emoji">🧠</span> 強化式學習</span>
+                <span class="spec-badge badge-secondary"><span class="badge-emoji">⚡</span> 電機工程</span>
+                <span class="spec-badge badge-accent"><span class="badge-emoji">⚽</span> 足球愛好者</span>
+              </div>
+
+              <!-- Bio -->
+              <p class="user-bio" id="user-bio" title="點擊編輯個人自介" tabindex="0" role="button">
+                國立中興大學電機工程學系。專注於強化式學習演算法與智慧系統，球場上熱血的進攻核心 ⚽。老師教很好，感謝～！
+              </p>
+
+              <!-- Social Action Bar -->
+              <div class="social-bar">
+                <a href="https://github.com/MERYAN-421" target="_blank" rel="noopener noreferrer" class="chip-btn chip-github">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                  </svg>
+                  <span>GitHub</span>
+                </a>
+                <a href="https://meryan-421.github.io/Course_pratice/" target="_blank" rel="noopener noreferrer" class="chip-btn chip-live">
+                  <span class="live-dot"></span>
+                  <span>Live Website</span>
+                </a>
               </div>
             </div>
-            <button class="avatar-edit-badge" id="avatar-badge-btn" title="編輯個人資訊" aria-label="Edit Profile">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 20h9"/>
-                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </div>
+        </div>
+
+        <!-- CLOCK HUD CARD -->
+        <div class="hero-clock-card glass-panel" id="clock">
+          <div class="clock-hud-header">
+            <div class="hud-title">
+              <span class="hud-icon">⚡</span>
+              <span>LIVE PRECISION CHRONO</span>
+            </div>
+            <div class="hud-status-badge">AUTO SYNC</div>
+          </div>
+
+          <!-- Digital Readout Display -->
+          <div class="hud-clock-display" id="clock-display">
+            <div class="chrono-unit">
+              <span class="chrono-digit" id="clock-hours">00</span>
+              <span class="chrono-label">HOURS</span>
+            </div>
+            <span class="chrono-sep">:</span>
+            <div class="chrono-unit">
+              <span class="chrono-digit" id="clock-minutes">00</span>
+              <span class="chrono-label">MINUTES</span>
+            </div>
+            <span class="chrono-sep sep-seconds" id="colon-seconds">:</span>
+            <div class="chrono-unit unit-seconds" id="seconds-wrapper">
+              <span class="chrono-digit digit-seconds" id="clock-seconds">00</span>
+              <span class="chrono-label">SECONDS</span>
+            </div>
+            <div class="chrono-ampm-box" id="clock-ampm">AM</div>
+          </div>
+
+          <!-- Second Progress Indicator -->
+          <div class="minute-progress-bar" title="分鐘即時行進進度 (Minute Progress)">
+            <div class="progress-fill" id="second-progress-bar"></div>
+          </div>
+
+          <!-- Day Progress Telemetry -->
+          <div class="day-progress-wrapper">
+            <div class="day-progress-labels">
+              <span class="day-label-txt">DAY COMPLETION</span>
+              <span class="day-label-pct" id="day-progress-val">48.5%</span>
+            </div>
+            <div class="day-progress-track">
+              <div class="day-progress-bar" id="day-progress-fill"></div>
+            </div>
+          </div>
+
+          <!-- Date & Timezone Chips -->
+          <div class="clock-telemetry-meta">
+            <div class="meta-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
+              <span id="date-display">Wednesday, September 16, 2026</span>
+            </div>
+
+            <div class="meta-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="2" y1="12" x2="22" y2="12"/>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+              </svg>
+              <span id="timezone-display">UTC+8 • Taipei Standard Time</span>
+            </div>
+          </div>
+
+          <!-- Clock Footer Actions -->
+          <div class="clock-actions-row">
+            <button class="action-btn" id="toggle-seconds-btn" title="切換秒數顯示">
+              <span class="btn-symbol">⚡</span>
+              <span id="seconds-label">Seconds: ON</span>
+            </button>
+
+            <button class="action-btn action-highlight" id="copy-time-btn" title="一鍵複製時間戳記">
+              <span class="btn-symbol" id="copy-icon">📋</span>
+              <span id="copy-label">Copy Time</span>
             </button>
           </div>
-
-          <div class="profile-details">
-            <div class="name-heading-row">
-              <h1 class="user-name" id="user-name" title="點擊編輯姓名" tabindex="0" role="button" aria-label="您的姓名 (點擊編輯)">Ryan</h1>
-              <button class="edit-icon-btn" id="edit-name-btn" title="編輯個人資料" aria-label="編輯個人資料">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 20h9"/>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                </svg>
-              </button>
-            </div>
-
-            <!-- Major & Specialty Tags -->
-            <div class="specialty-tags">
-              <span class="spec-tag"><span class="tag-icon">🧠</span> 強化式學習</span>
-              <span class="spec-tag"><span class="tag-icon">⚡</span> 電機工程</span>
-              <span class="spec-tag highlight"><span class="tag-icon">⚽</span> 足球愛好者</span>
-            </div>
-
-            <!-- Bio -->
-            <p class="user-bio" id="user-bio" title="點擊編輯簡介" tabindex="0" role="button" aria-label="個人簡介 (點擊編輯)">
-              國立中興大學電機工程學系。專注於強化式學習演算法與智慧系統，球場上熱血的進攻核心 ⚽。老師教很好，感謝～！
-            </p>
-
-            <!-- Social Links -->
-            <div class="social-links-bar">
-              <a href="https://github.com/MERYAN-421" target="_blank" rel="noopener noreferrer" class="social-chip" id="github-link">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
-                </svg>
-                <span>GitHub @MERYAN-421</span>
-              </a>
-              <a href="https://meryan-421.github.io/Course_pratice/" target="_blank" rel="noopener noreferrer" class="social-chip active-chip">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <line x1="2" y1="12" x2="22" y2="12"></line>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                </svg>
-                <span>Live Website</span>
-              </a>
-            </div>
-          </div>
         </div>
+
       </section>
 
-      <!-- Live Clock Section -->
-      <section class="card-glass clock-card" id="clock" aria-label="即時時鐘 Live Clock">
-        <div class="section-title-row">
-          <span class="section-badge">PRECISION TIME ENGINE</span>
-          <h2 class="section-heading">CURRENT LOCAL TIME</h2>
+      <!-- SECTION: CORE CAPABILITIES & SKILLS -->
+      <section class="section-container" id="skills">
+        <div class="section-header">
+          <div class="section-title-tag">// 01. CORE SKILLS</div>
+          <h2 class="section-title">專業技能 & 領域專長</h2>
         </div>
 
-        <div class="clock-display" id="clock-display" aria-live="off">
-          <div class="time-block hours-block">
-            <span class="time-digits" id="clock-hours">00</span>
-            <span class="time-sublabel">HRS</span>
-          </div>
-          <div class="time-colon" aria-hidden="true">:</div>
-          <div class="time-block minutes-block">
-            <span class="time-digits" id="clock-minutes">00</span>
-            <span class="time-sublabel">MIN</span>
-          </div>
-          <div class="time-colon colon-seconds" id="colon-seconds" aria-hidden="true">:</div>
-          <div class="time-block seconds-block" id="seconds-wrapper">
-            <span class="time-digits digits-seconds" id="clock-seconds">00</span>
-            <span class="time-sublabel">SEC</span>
-          </div>
-          <div class="ampm-badge" id="clock-ampm">AM</div>
-        </div>
-
-        <!-- Minute Progress Bar -->
-        <div class="progress-bar-container" title="當前分鐘行進比例 (Minute Progress)">
-          <div class="progress-bar-fill" id="second-progress-bar"></div>
-        </div>
-
-        <!-- Date & Timezone Metadata -->
-        <div class="clock-meta">
-          <div class="meta-item date-item">
-            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            <span id="date-display">Wednesday, September 16, 2026</span>
-          </div>
-
-          <div class="meta-item timezone-item">
-            <svg class="meta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="2" y1="12" x2="22" y2="12"/>
-              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            <span id="timezone-display">UTC+8 • Taipei Standard Time</span>
-          </div>
-        </div>
-
-        <!-- Clock Controls Toolbar -->
-        <div class="clock-toolbar">
-          <button class="tool-btn" id="toggle-format-btn" aria-label="切換 12/24 小時制">
-            <span class="tool-btn-icon">⏱️</span>
-            <span class="tool-btn-label" id="format-label">24-Hour</span>
-          </button>
-
-          <button class="tool-btn" id="toggle-seconds-btn" aria-label="切換秒數顯示">
-            <span class="tool-btn-icon">⚡</span>
-            <span class="tool-btn-label" id="seconds-label">Seconds: ON</span>
-          </button>
-
-          <button class="tool-btn" id="copy-time-btn" aria-label="複製當前時間戳記">
-            <span class="tool-btn-icon" id="copy-icon">📋</span>
-            <span class="tool-btn-label" id="copy-label">Copy Time</span>
-          </button>
-        </div>
-      </section>
-
-      <!-- Skills Section -->
-      <section class="card-glass skills-card" id="skills" aria-label="專業技能 Skills">
-        <div class="section-title-row">
-          <span class="section-badge">CORE CAPABILITIES</span>
-          <h2 class="section-heading">🛠 專業技能 & 領域專長</h2>
-        </div>
-
-        <div class="skills-grid">
+        <div class="skills-matrix">
           <!-- Skill 1 -->
-          <div class="skill-box">
-            <div class="skill-header">
-              <span class="skill-icon">🧠</span>
-              <span class="skill-level-tag">Focus</span>
+          <div class="skill-card glass-panel">
+            <div class="skill-top">
+              <div class="skill-icon-box">🧠</div>
+              <span class="skill-tier-badge tier-core">CORE FOCUS</span>
             </div>
-            <h3 class="skill-name">強化式學習 (Reinforcement Learning)</h3>
-            <p class="skill-desc">專注於自律代理人演算法、Q-Learning、Policy Gradient 與模擬環境探索。</p>
-            <div class="skill-tags">
-              <span class="mini-tag">Python</span>
-              <span class="mini-tag">PyTorch</span>
-              <span class="mini-tag">Gymnasium</span>
-              <span class="mini-tag">AI/ML</span>
+            <h3 class="skill-title">強化式學習 (Reinforcement Learning)</h3>
+            <p class="skill-summary">自律代理人決策系統、Q-Learning、Policy Optimization 與物理環境模擬。</p>
+            <div class="skill-chips-row">
+              <span class="skill-chip">Python</span>
+              <span class="skill-chip">PyTorch</span>
+              <span class="skill-chip">Gymnasium</span>
+              <span class="skill-chip">AI Algorithms</span>
             </div>
           </div>
 
           <!-- Skill 2 -->
-          <div class="skill-box">
-            <div class="skill-header">
-              <span class="skill-icon">⚡</span>
-              <span class="skill-level-tag">Fundamental</span>
+          <div class="skill-card glass-panel">
+            <div class="skill-top">
+              <div class="skill-icon-box">⚡</div>
+              <span class="skill-tier-badge tier-fundamental">FOUNDATION</span>
             </div>
-            <h3 class="skill-name">C / C++ & 電機工程基礎</h3>
-            <p class="skill-desc">電機硬體架構、嵌入式微處理器系統概念、演算法邏輯與資料結構實作。</p>
-            <div class="skill-tags">
-              <span class="mini-tag">C / C++</span>
-              <span class="mini-tag">Embedded</span>
-              <span class="mini-tag">Microcontroller</span>
-              <span class="mini-tag">EE Core</span>
+            <h3 class="skill-title">C / C++ & 電機工程核心</h3>
+            <p class="skill-summary">微處理器架構、嵌入式硬體韌體控制概念、高效能演算法與資料結構。</p>
+            <div class="skill-chips-row">
+              <span class="skill-chip">C / C++</span>
+              <span class="skill-chip">Embedded</span>
+              <span class="skill-chip">Microcontrollers</span>
+              <span class="skill-chip">EE Systems</span>
             </div>
           </div>
 
           <!-- Skill 3 -->
-          <div class="skill-box">
-            <div class="skill-header">
-              <span class="skill-icon">🌐</span>
-              <span class="skill-level-tag">Practicing</span>
+          <div class="skill-card glass-panel">
+            <div class="skill-top">
+              <div class="skill-icon-box">🌐</div>
+              <span class="skill-tier-badge tier-practicing">PRACTICING</span>
             </div>
-            <h3 class="skill-name">Web 開發 & Git / GitHub</h3>
-            <p class="skill-desc">現代前端語意架構 (HTML5/CSS3/JavaScript)、毛玻璃動態 UI 及版本控制與自動化部署。</p>
-            <div class="skill-tags">
-              <span class="mini-tag">HTML5</span>
-              <span class="mini-tag">Vanilla CSS</span>
-              <span class="mini-tag">JavaScript</span>
-              <span class="mini-tag">Git Flow</span>
+            <h3 class="skill-title">Web 開發 & Git / GitHub</h3>
+            <p class="skill-summary">現代前端語意化架構、深色毛玻璃介面動效、Canvas 繪製與版本控制自動化。</p>
+            <div class="skill-chips-row">
+              <span class="skill-chip">HTML5</span>
+              <span class="skill-chip">Vanilla CSS</span>
+              <span class="skill-chip">JavaScript</span>
+              <span class="skill-chip">Git Flow</span>
             </div>
           </div>
 
           <!-- Skill 4 -->
-          <div class="skill-box highlight-skill">
-            <div class="skill-header">
-              <span class="skill-icon">⚽</span>
-              <span class="skill-level-tag special">Passion</span>
+          <div class="skill-card glass-panel skill-passion-card">
+            <div class="skill-top">
+              <div class="skill-icon-box">⚽</div>
+              <span class="skill-tier-badge tier-passion">PASSION</span>
             </div>
-            <h3 class="skill-name">足球競技 & 團隊作戰</h3>
-            <p class="skill-desc">最具自信的球場實力！擔任進攻前鋒，擅長戰術跑位、團隊協作默契與高壓應變心態。</p>
-            <div class="skill-tags">
-              <span class="mini-tag">Striker</span>
-              <span class="mini-tag">Tactics</span>
-              <span class="mini-tag">Teamwork</span>
-              <span class="mini-tag">Agility</span>
+            <h3 class="skill-title">足球競技 & 團隊合作</h3>
+            <p class="skill-summary">最自信的綠茵場進攻實力！擔任前鋒，具備敏銳戰術跑位、團隊默契與抗壓韌性。</p>
+            <div class="skill-chips-row">
+              <span class="skill-chip">Striker</span>
+              <span class="skill-chip">Tactical Agility</span>
+              <span class="skill-chip">Team Dynamics</span>
+              <span class="skill-chip">Tenacity</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Projects Section -->
-      <section class="card-glass projects-card" id="projects" aria-label="作品專案 Projects">
-        <div class="section-title-row">
-          <span class="section-badge">PORTFOLIO WORK</span>
-          <h2 class="section-heading">🚀 精選專案 & 作品經歷</h2>
+      <!-- SECTION: FEATURED PROJECTS -->
+      <section class="section-container" id="projects">
+        <div class="section-header">
+          <div class="section-title-tag">// 02. FEATURED PROJECTS</div>
+          <h2 class="section-title">作品專案 & 學習成果</h2>
         </div>
 
-        <div class="projects-list">
-          <!-- Project 1 (DIC-1 Coursework) -->
-          <article class="project-item">
-            <div class="project-meta-header">
-              <span class="project-badge status-live">● Completed & Live</span>
-              <span class="project-year">2026 Coursework</span>
+        <div class="projects-grid">
+          <!-- Project 1: DIC-1 Personal Page -->
+          <article class="project-card glass-panel featured-project">
+            <div class="project-header">
+              <span class="project-status-pill status-active">● COMPLETED & DEPLOYED</span>
+              <span class="project-meta-date">2026 // DIC-1</span>
             </div>
-            <h3 class="project-title">DIC-1 Personal Page & Live Clock</h3>
-            <p class="project-description">
-              以 Antigravity IDE 打造的個人專業儀表板。具備毫秒級自動校準即時數位時鐘、12H/24H 雙模式切換、5 款高質感動態主題配色、毛玻璃美學及響應式手機排版。已完整發布至 GitHub Pages。
+            <h3 class="project-headline">DIC-1 Personal Dashboard & Live Clock</h3>
+            <p class="project-body">
+              以 Antigravity IDE 打造之全響應式 Cyber-Luxe 個人儀表板。整合毫秒級自適應時鐘、12H/24H 雙制切換、粒子星空畫布互動、5 款精心微調之深色主題與 LocalStorage 持久化狀態管理。
             </p>
-            <div class="project-tech-stack">
-              <span class="tech-chip">HTML5</span>
-              <span class="tech-chip">Vanilla CSS</span>
-              <span class="tech-chip">JavaScript (ES6+)</span>
-              <span class="tech-chip">GitHub Pages</span>
+            <div class="project-tags-list">
+              <span class="ptag">HTML5</span>
+              <span class="ptag">Vanilla CSS</span>
+              <span class="ptag">JavaScript (ES6+)</span>
+              <span class="ptag">Canvas API</span>
+              <span class="ptag">GitHub Pages</span>
             </div>
-            <div class="project-actions">
-              <a href="https://meryan-421.github.io/Course_pratice/" target="_blank" rel="noopener noreferrer" class="btn-action btn-primary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="project-btn-group">
+              <a href="https://meryan-421.github.io/Course_pratice/" target="_blank" rel="noopener noreferrer" class="pbtn pbtn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                   <polyline points="15 3 21 3 21 9"></polyline>
                   <line x1="10" y1="14" x2="21" y2="3"></line>
                 </svg>
                 <span>Live Demo</span>
               </a>
-              <a href="https://github.com/MERYAN-421/Course_pratice" target="_blank" rel="noopener noreferrer" class="btn-action btn-secondary">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <a href="https://github.com/MERYAN-421/Course_pratice" target="_blank" rel="noopener noreferrer" class="pbtn pbtn-secondary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
                 </svg>
                 <span>GitHub Repo</span>
@@ -308,24 +333,24 @@
             </div>
           </article>
 
-          <!-- Project 2 (Upcoming RL Project) -->
-          <article class="project-item">
-            <div class="project-meta-header">
-              <span class="project-badge status-planning">⚡ In Development</span>
-              <span class="project-year">2026 Academic Project</span>
+          <!-- Project 2: RL Agent Playground -->
+          <article class="project-card glass-panel">
+            <div class="project-header">
+              <span class="project-status-pill status-wip">⚡ IN RESEARCH</span>
+              <span class="project-meta-date">2026 Academic Research</span>
             </div>
-            <h3 class="project-title">RL Agent Playground (強化式學習自律代理人)</h3>
-            <p class="project-description">
-              本學期規劃進行之強化式學習主題研究。探討智慧代理人在連續動作空間與未知物理環境中的探索演算法，結合深度強化學習 (Deep Q-Network / PPO) 訓練最佳自律決策模型。
+            <h3 class="project-headline">RL Agent Playground (強化式學習自律代理人)</h3>
+            <p class="project-body">
+              專注於連續空間中多目標智慧代理人之探索架構。結合 Deep Q-Networks 與 PPO (Proximal Policy Optimization) 演算法，於 Gymnasium 虛擬環境中進行即時決策最佳化。
             </p>
-            <div class="project-tech-stack">
-              <span class="tech-chip">Python</span>
-              <span class="tech-chip">PyTorch</span>
-              <span class="tech-chip">Gymnasium</span>
-              <span class="tech-chip">Reinforcement Learning</span>
+            <div class="project-tags-list">
+              <span class="ptag">Python</span>
+              <span class="ptag">PyTorch</span>
+              <span class="ptag">Gymnasium</span>
+              <span class="ptag">Deep RL</span>
             </div>
-            <div class="project-actions">
-              <span class="status-tag-planning">📌 專案研究規劃進行中 (Upcoming)</span>
+            <div class="project-btn-group">
+              <span class="status-planning-chip">📌 專案研究規劃進行中 (Upcoming)</span>
             </div>
           </article>
         </div>
@@ -333,16 +358,22 @@
 
     </main>
 
-    <!-- Footer -->
+    <!-- Sleek Cyber Footer -->
     <footer class="site-footer">
-      <div class="footer-content">
-        <p class="copyright">© 2026 <strong>Ryan</strong> • 國立中興大學 電機工程學系 (NCHU EE)</p>
-        <p class="powered-by">Designed with Antigravity IDE • Hosted on GitHub Pages</p>
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span class="f-name">Ryan (阮)</span>
+          <span class="f-dot">•</span>
+          <span class="f-dept">國立中興大學 電機工程學系 (NCHU EE)</span>
+        </div>
+        <div class="footer-credits">
+          Designed with Antigravity IDE • Hosted on GitHub Pages
+        </div>
       </div>
     </footer>
   </div>
 
-  <!-- Edit Profile Modal -->
+  <!-- Edit Profile Modal Dialog -->
   <div class="modal-backdrop" id="edit-modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-labelledby="modal-title" aria-modal="true">
       <div class="modal-header">
@@ -356,7 +387,7 @@
         </div>
         <div class="form-group">
           <label for="input-bio" class="form-label">個人自介 / 學習目標</label>
-          <textarea id="input-bio" class="form-input form-textarea" placeholder="請輸入個人自我介紹" rows="3" maxlength="200"></textarea>
+          <textarea id="input-bio" class="form-input form-textarea" placeholder="請輸入自我介紹" rows="3" maxlength="200"></textarea>
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-cancel" id="modal-cancel-btn">取消</button>

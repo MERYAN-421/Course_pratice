@@ -1,17 +1,13 @@
 /**
- * Ryan's Personal Page & Live Precision Clock Application
- * DIC-1 Coursework - National Chung Hsing University Electrical Engineering
+ * Ryan's Cyber-Luxe Personal Page & Live Precision Chrono
+ * National Chung Hsing University - Electrical Engineering (NCHU EE)
  */
 
 (function () {
   'use strict';
 
-  // DOM Elements
+  // --- DOM Elements ---
   const elements = {
-    // Top Navigation
-    navLinks: document.querySelectorAll('.nav-link'),
-    sections: document.querySelectorAll('section[id]'),
-
     // Clock
     hours: document.getElementById('clock-hours'),
     minutes: document.getElementById('clock-minutes'),
@@ -20,19 +16,24 @@
     secondsWrapper: document.getElementById('seconds-wrapper'),
     ampm: document.getElementById('clock-ampm'),
     secondProgressBar: document.getElementById('second-progress-bar'),
+    dayProgressVal: document.getElementById('day-progress-val'),
+    dayProgressFill: document.getElementById('day-progress-fill'),
     dateDisplay: document.getElementById('date-display'),
     timezoneDisplay: document.getElementById('timezone-display'),
+
+    // Greeting & Status
     greetingText: document.getElementById('greeting-text'),
+    greetingIcon: document.getElementById('greeting-icon'),
+    telemetryLatency: document.getElementById('telemetry-latency'),
 
     // Profile
     userName: document.getElementById('user-name'),
     userBio: document.getElementById('user-bio'),
     avatarInitials: document.getElementById('avatar-initials'),
-    editNameBtn: document.getElementById('edit-name-btn'),
-    avatarBadgeBtn: document.getElementById('avatar-badge-btn'),
+    quickEditBtn: document.getElementById('quick-edit-btn'),
 
-    // Clock Toolbar
-    toggleFormatBtn: document.getElementById('toggle-format-btn'),
+    // Controls
+    formatToggleBtn: document.getElementById('format-toggle-btn'),
     formatLabel: document.getElementById('format-label'),
     toggleSecondsBtn: document.getElementById('toggle-seconds-btn'),
     secondsLabel: document.getElementById('seconds-label'),
@@ -53,11 +54,12 @@
 
     // Toast
     toast: document.getElementById('toast'),
+    bgCanvas: document.getElementById('bg-canvas'),
   };
 
-  // State Management with LocalStorage
+  // --- State ---
   const defaultBio = '國立中興大學電機工程學系。專注於強化式學習演算法與智慧系統，球場上熱血的進攻核心 ⚽。老師教很好，感謝～！';
-  
+
   let storedName = localStorage.getItem('personal_page_name');
   if (!storedName || storedName === 'Alex Morgan') {
     storedName = 'Ryan';
@@ -78,55 +80,63 @@
     theme: localStorage.getItem('personal_page_theme') || 'aurora',
   };
 
-  // Toast Notification Helper
-  let toastTimeout = null;
-  function showToast(message) {
+  // --- Toast Notification ---
+  let toastTimer = null;
+  function showToast(msg) {
     if (!elements.toast) return;
-    elements.toast.textContent = message;
+    elements.toast.textContent = msg;
     elements.toast.classList.add('show');
-    if (toastTimeout) clearTimeout(toastTimeout);
-    toastTimeout = setTimeout(() => {
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
       elements.toast.classList.remove('show');
-    }, 2600);
+    }, 2500);
   }
 
-  // Calculate initials from name
+  // --- Initials Generator ---
   function getInitials(name) {
     if (!name) return 'RY';
     const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) {
-      return parts[0].substring(0, 2).toUpperCase();
-    }
+    if (parts.length === 1) return parts[0].substring(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  // Update Profile DOM
+  // --- Profile Render ---
   function updateProfileDOM() {
     if (elements.userName) elements.userName.textContent = state.name;
     if (elements.userBio) elements.userBio.textContent = state.bio;
     if (elements.avatarInitials) elements.avatarInitials.textContent = getInitials(state.name);
-    document.title = `${state.name} • 中興電機 | Personal Page & Live Clock`;
+    document.title = `${state.name} • 中興電機 | Cyber-Luxe Personal Page`;
   }
 
-  // Update Greeting based on time and name
+  // --- Dynamic Greeting Engine ---
   function updateGreeting(now) {
     const hours = now.getHours();
-    let greeting = 'Good day';
+    let greeting = 'GOOD DAY';
+    let icon = '✨';
+
     if (hours >= 5 && hours < 12) {
-      greeting = '🌅 Good morning';
+      greeting = 'GOOD MORNING';
+      icon = '🌅';
     } else if (hours >= 12 && hours < 17) {
-      greeting = '☀️ Good afternoon';
+      greeting = 'GOOD AFTERNOON';
+      icon = '☀️';
     } else if (hours >= 17 && hours < 22) {
-      greeting = '🌆 Good evening';
+      greeting = 'GOOD EVENING';
+      icon = '🌆';
     } else {
-      greeting = '🌙 Good night';
+      greeting = 'GOOD NIGHT';
+      icon = '🌙';
     }
+
     if (elements.greetingText) {
-      elements.greetingText.textContent = `${greeting}, ${state.name}`;
+      elements.greetingText.textContent = `${greeting}, ${state.name.toUpperCase()}`;
+    }
+    if (elements.greetingIcon) {
+      elements.greetingIcon.textContent = icon;
     }
   }
 
-  // Get Formatted UTC Offset & Timezone
+  // --- Formatted Timezone ---
   function getFormattedTimezone() {
     try {
       const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -141,26 +151,32 @@
     }
   }
 
-  // Precision Real-Time Clock Update Loop
+  // --- Precision Clock Engine ---
   let lastSecond = -1;
   function tickClock() {
     const now = new Date();
     const currentSeconds = now.getSeconds();
     const currentMs = now.getMilliseconds();
+    const rawHours = now.getHours();
+    const minutes = now.getMinutes();
 
-    // Smooth second progress bar
+    // Smooth Second Progress Bar
     if (elements.secondProgressBar) {
       const progressPercent = ((currentSeconds + currentMs / 1000) / 60) * 100;
       elements.secondProgressBar.style.width = `${progressPercent.toFixed(2)}%`;
     }
 
-    // Update text content when second ticks
+    // Update digits & day completion when second ticks
     if (currentSeconds !== lastSecond) {
       lastSecond = currentSeconds;
 
-      let rawHours = now.getHours();
-      const minutes = now.getMinutes();
+      // Day Completion Calculation (out of 86400 seconds)
+      const totalDaySeconds = rawHours * 3600 + minutes * 60 + currentSeconds;
+      const dayPct = ((totalDaySeconds / 86400) * 100).toFixed(1);
+      if (elements.dayProgressVal) elements.dayProgressVal.textContent = `${dayPct}%`;
+      if (elements.dayProgressFill) elements.dayProgressFill.style.width = `${dayPct}%`;
 
+      // 12H vs 24H formatting
       let displayHours = rawHours;
       let ampmText = '';
 
@@ -170,15 +186,9 @@
         if (displayHours === 0) displayHours = 12;
       }
 
-      if (elements.hours) {
-        elements.hours.textContent = displayHours.toString().padStart(2, '0');
-      }
-      if (elements.minutes) {
-        elements.minutes.textContent = minutes.toString().padStart(2, '0');
-      }
-      if (elements.seconds) {
-        elements.seconds.textContent = currentSeconds.toString().padStart(2, '0');
-      }
+      if (elements.hours) elements.hours.textContent = displayHours.toString().padStart(2, '0');
+      if (elements.minutes) elements.minutes.textContent = minutes.toString().padStart(2, '0');
+      if (elements.seconds) elements.seconds.textContent = currentSeconds.toString().padStart(2, '0');
 
       if (elements.ampm) {
         if (state.is24Hour) {
@@ -195,15 +205,23 @@
         elements.dateDisplay.textContent = now.toLocaleDateString('en-US', dateOptions);
       }
 
-      // Greeting update
       updateGreeting(now);
     }
 
-    // Request next animation frame
     requestAnimationFrame(tickClock);
   }
 
-  // Theme Management
+  // --- Telemetry Jitter Simulation ---
+  function initTelemetry() {
+    setInterval(() => {
+      if (elements.telemetryLatency) {
+        const latency = Math.floor(Math.random() * 6) + 11; // 11ms ~ 16ms
+        elements.telemetryLatency.textContent = `${latency}ms`;
+      }
+    }, 4500);
+  }
+
+  // --- Theme Management ---
   function applyTheme(themeName) {
     state.theme = themeName;
     document.body.setAttribute('data-theme', themeName);
@@ -216,9 +234,11 @@
         btn.classList.remove('active');
       }
     });
+
+    updateParticleColor();
   }
 
-  // Seconds Visibility Toggle
+  // --- Seconds Display Toggle ---
   function applySecondsVisibility() {
     if (state.showSeconds) {
       if (elements.colonSeconds) elements.colonSeconds.style.display = '';
@@ -231,46 +251,22 @@
     }
   }
 
-  // 12h / 24h Toggle
+  // --- Format Toggle ---
   function applyFormat() {
     if (elements.formatLabel) {
-      elements.formatLabel.textContent = state.is24Hour ? '24-Hour' : '12-Hour';
+      elements.formatLabel.textContent = state.is24Hour ? '24H' : '12H';
     }
     lastSecond = -1;
   }
 
-  // Scrollspy for Navigation Bar
-  function initScrollSpy() {
-    window.addEventListener('scroll', () => {
-      let currentSectionId = 'about';
-      const scrollY = window.pageYOffset + 120;
-
-      elements.sections.forEach((section) => {
-        const top = section.offsetTop;
-        const height = section.offsetHeight;
-        if (scrollY >= top && scrollY < top + height) {
-          currentSectionId = section.getAttribute('id');
-        }
-      });
-
-      elements.navLinks.forEach((link) => {
-        if (link.getAttribute('href') === `#${currentSectionId}`) {
-          link.classList.add('active');
-        } else {
-          link.classList.remove('active');
-        }
-      });
-    }, { passive: true });
-  }
-
-  // Modal Handlers
+  // --- Modal Logic ---
   function openModal() {
     if (elements.inputName) elements.inputName.value = state.name;
     if (elements.inputBio) elements.inputBio.value = state.bio;
     if (elements.modal) {
       elements.modal.classList.add('open');
       elements.modal.setAttribute('aria-hidden', 'false');
-      setTimeout(() => elements.inputName.focus(), 100);
+      setTimeout(() => elements.inputName.focus(), 80);
     }
   }
 
@@ -281,15 +277,135 @@
     }
   }
 
-  // Initialize Event Listeners
+  // --- Interactive Constellation Particle Canvas ---
+  let particles = [];
+  let particleColor = '0, 240, 255';
+  let mouse = { x: null, y: null, radius: 140 };
+
+  function updateParticleColor() {
+    const colors = {
+      aurora: '0, 240, 255',
+      cyan: '56, 189, 248',
+      emerald: '0, 255, 157',
+      rose: '251, 113, 133',
+      amber: '251, 191, 36'
+    };
+    particleColor = colors[state.theme] || '0, 240, 255';
+  }
+
+  function initParticleCanvas() {
+    const canvas = elements.bgCanvas;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    }, { passive: true });
+
+    window.addEventListener('mouseout', () => {
+      mouse.x = null;
+      mouse.y = null;
+    });
+
+    // Particle Class
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 2 + 1;
+        this.baseX = this.x;
+        this.baseY = this.y;
+        this.density = Math.random() * 20 + 5;
+        this.vx = (Math.random() - 0.5) * 0.6;
+        this.vy = (Math.random() - 0.5) * 0.6;
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(${particleColor}, 0.7)`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width) this.vx = -this.vx;
+        if (this.y < 0 || this.y > canvas.height) this.vy = -this.vy;
+
+        // Mouse interaction
+        if (mouse.x != null && mouse.y != null) {
+          const dx = mouse.x - this.x;
+          const dy = mouse.y - this.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < mouse.radius) {
+            const force = (mouse.radius - distance) / mouse.radius;
+            const directionX = (dx / distance) * force * 2;
+            const directionY = (dy / distance) * force * 2;
+            this.x -= directionX;
+            this.y -= directionY;
+          }
+        }
+      }
+    }
+
+    const particleCount = Math.min(Math.floor((canvas.width * canvas.height) / 18000), 75);
+    particles = [];
+    for (let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    // Animation Loop
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
+        particles[i].update();
+
+        // Connect neighboring particles
+        for (let j = i; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 110) {
+            const opacity = 1 - dist / 110;
+            ctx.strokeStyle = `rgba(${particleColor}, ${opacity * 0.18})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  }
+
+  // --- Event Listeners ---
   function initEvents() {
     // 12h/24h toggle
-    if (elements.toggleFormatBtn) {
-      elements.toggleFormatBtn.addEventListener('click', () => {
+    if (elements.formatToggleBtn) {
+      elements.formatToggleBtn.addEventListener('click', () => {
         state.is24Hour = !state.is24Hour;
         localStorage.setItem('personal_page_is24h', state.is24Hour);
         applyFormat();
-        showToast(`已切換為 ${state.is24Hour ? '24 小時制' : '12 小時制'}`);
+        showToast(`CHRONO FORMAT: ${state.is24Hour ? '24-HOUR' : '12-HOUR'}`);
       });
     }
 
@@ -299,11 +415,11 @@
         state.showSeconds = !state.showSeconds;
         localStorage.setItem('personal_page_show_seconds', state.showSeconds);
         applySecondsVisibility();
-        showToast(`秒數顯示：${state.showSeconds ? '開啟' : '關閉'}`);
+        showToast(`SECONDS DISPLAY: ${state.showSeconds ? 'ACTIVE' : 'MUTED'}`);
       });
     }
 
-    // Copy Time button
+    // Copy Time
     if (elements.copyTimeBtn) {
       elements.copyTimeBtn.addEventListener('click', () => {
         const now = new Date();
@@ -311,44 +427,37 @@
           ? now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
           : now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
         const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
-        const fullStamp = `${timeStr} (${dateStr})`;
+        const stamp = `${timeStr} (${dateStr})`;
 
         if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(fullStamp).then(() => {
-            showToast(`已複製時間戳記：${fullStamp}`);
+          navigator.clipboard.writeText(stamp).then(() => {
+            showToast(`COPIED TIMESTAMP: ${stamp}`);
           }).catch(() => {
-            showToast(`時間戳記：${fullStamp}`);
+            showToast(`TIMESTAMP: ${stamp}`);
           });
         } else {
-          showToast(`時間戳記：${fullStamp}`);
+          showToast(`TIMESTAMP: ${stamp}`);
         }
       });
     }
 
-    // Theme Picker
+    // Themes
     if (elements.themeButtons) {
       elements.themeButtons.forEach((btn) => {
         btn.addEventListener('click', () => {
-          const selectedTheme = btn.getAttribute('data-theme');
-          applyTheme(selectedTheme);
-          const themeNames = {
-            aurora: 'Aurora 極光紫',
-            cyan: 'Cyber 賽博藍',
-            emerald: 'Emerald 翡翠綠',
-            rose: 'Sunset 暮光玫',
-            amber: 'Amber 曜石金'
-          };
-          showToast(`已切換主題：${themeNames[selectedTheme] || selectedTheme}`);
+          const t = btn.getAttribute('data-theme');
+          applyTheme(t);
+          showToast(`THEME ACCENT: ${t.toUpperCase()}`);
         });
       });
     }
 
-    // Edit Modal Triggers
-    const editTriggers = [elements.userName, elements.userBio, elements.editNameBtn, elements.avatarBadgeBtn];
-    editTriggers.forEach((trigger) => {
-      if (trigger) {
-        trigger.addEventListener('click', openModal);
-        trigger.addEventListener('keydown', (e) => {
+    // Quick Edit & Triggers
+    const editTriggers = [elements.userName, elements.userBio, elements.quickEditBtn];
+    editTriggers.forEach((trig) => {
+      if (trig) {
+        trig.addEventListener('click', openModal);
+        trig.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
             openModal();
@@ -357,7 +466,6 @@
       }
     });
 
-    // Close Modal
     if (elements.modalCloseBtn) elements.modalCloseBtn.addEventListener('click', closeModal);
     if (elements.modalCancelBtn) elements.modalCancelBtn.addEventListener('click', closeModal);
     if (elements.modal) {
@@ -372,30 +480,26 @@
       }
     });
 
-    // Save Profile Form
     if (elements.profileForm) {
       elements.profileForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const newName = elements.inputName.value.trim();
-        const newBio = elements.inputBio.value.trim();
-
-        if (newName) {
-          state.name = newName;
-          state.bio = newBio || defaultBio;
-
+        const n = elements.inputName.value.trim();
+        const b = elements.inputBio.value.trim();
+        if (n) {
+          state.name = n;
+          state.bio = b || defaultBio;
           localStorage.setItem('personal_page_name', state.name);
           localStorage.setItem('personal_page_bio', state.bio);
-
           updateProfileDOM();
           updateGreeting(new Date());
           closeModal();
-          showToast(`個人資料已更新！歡迎，${state.name}`);
+          showToast(`PROFILE UPDATED: ${state.name}`);
         }
       });
     }
   }
 
-  // Startup initialization
+  // --- Startup ---
   function init() {
     updateProfileDOM();
     applyTheme(state.theme);
@@ -407,13 +511,11 @@
     }
 
     initEvents();
-    initScrollSpy();
-
-    // Start precision clock loop
+    initTelemetry();
+    initParticleCanvas();
     tickClock();
   }
 
-  // Launch when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
